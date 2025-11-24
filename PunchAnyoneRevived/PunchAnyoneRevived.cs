@@ -32,7 +32,8 @@ namespace PunchAnyoneRevived
         TheatreGuy,
         theatrePresident,
         Jokke,
-        Uncle
+        Uncle,
+        Dancer
     }
 
     public class PunchAnyoneRevived : Mod
@@ -246,8 +247,9 @@ namespace PunchAnyoneRevived
                         GameObject drunk1Cap = npc.Skeleton.transform.Find("pelvis/spine_middle/spine_upper/HeadPivot/head/Cap 1").gameObject;
                         spawnNPCAttribute(drunk1Cap);
                     }
-                    else if (npc.NpcObjectType == NpcType.Lindell || npc.NpcObjectType == NpcType.Guard || npc.NpcObjectType == NpcType.Synthist || npc.NpcObjectType == NpcType.SuskiPassenger || npc.NpcObjectType == NpcType.TheatreGuy || npc.NpcObjectType == NpcType.Jokke)
+                    else if (npc.NpcObjectType == NpcType.Lindell || npc.NpcObjectType == NpcType.Guard || npc.NpcObjectType == NpcType.Synthist || npc.NpcObjectType == NpcType.SuskiPassenger || npc.NpcObjectType == NpcType.TheatreGuy || npc.NpcObjectType == NpcType.Jokke || npc.NpcObjectType == NpcType.Dancer)
                     {
+                        // NPC without any attributes.
                         UnityEngine.Object.Destroy(newHead.transform.Find("Accessories/eye_glasses_regular").gameObject);
                     }
                     else if (npc.NpcObjectType == NpcType.Singer)
@@ -859,6 +861,57 @@ namespace PunchAnyoneRevived
             this.initNPC(jokkeHead, jokkeBodymesh, jokkeBase, jokkeSkeleton, done, NpcType.Jokke);
         }
 
+        private void initDancers()
+        {
+            // The dancers have duplicate object names and paths so we'll have to find them manually.
+            GameObject danceHallBase = this.GetGameObject("DANCEHALL/Functions");
+            foreach (Transform child in danceHallBase.transform)
+            {
+                if (child.gameObject.name == "Dancer")
+                {
+                    GameObject dancerBase = child.gameObject;
+                    GameObject dancerSkeleton = dancerBase.transform.Find("Pivot").gameObject;
+                    GameObject dancerBodymesh = dancerBase.transform.Find("Pivot/bodymesh").gameObject;
+                    GameObject dancerHead = dancerBase.transform.Find("Pivot/pelvis/spine_mid/shoulders(xxxxx)/head").gameObject;
+                    void done()
+                    {
+
+                    }
+                    this.initNPC(dancerHead, dancerBodymesh, dancerBase, dancerSkeleton, done, NpcType.Dancer);
+                }
+                else if (child.gameObject.name == "DanceCouple")
+                {
+                    GameObject coupleBase = child.gameObject;
+                    foreach (Transform coupleDancer in coupleBase.transform)
+                    {
+                        GameObject dancerBase = coupleDancer.gameObject;
+                        ModConsole.Print(dancerBase.gameObject.name);
+                        GameObject dancerSkeleton = dancerBase.transform.Find("Pivot").gameObject;
+                        GameObject dancerBodymesh = dancerBase.transform.Find("Pivot/bodymesh").gameObject;
+                        GameObject dancerHead;
+                        if (dancerBase.name == "Dancer1")
+                        {
+                            dancerHead = dancerBase.transform.Find("Pivot/pelvis/spine_mid/shoulders(xxxxx)/head").gameObject;
+                        }
+                        else
+                        {
+                            dancerHead = dancerBase.transform.Find("Pivot/pelvis/spine_middle/spine_upper/head").gameObject;
+                        }
+
+                        void done()
+                        {
+                            // Destroying the dancer and parent element happens in the same frame, therefore check for count 1 instead of 0 (the child count isn't immediately updated).
+                            if (coupleBase.transform.childCount == 1)
+                            {
+                                UnityEngine.Object.Destroy(coupleBase);
+                            }
+                        }
+                        this.initNPC(dancerHead, dancerBodymesh, dancerBase, dancerSkeleton, done, NpcType.Dancer);
+                    }
+                }
+            }
+        }
+
         private bool punchTeimo()
         {
             if (!this.teimoPunched)
@@ -970,6 +1023,7 @@ namespace PunchAnyoneRevived
             this.initTheatreGuy();
             this.initTheatrePresident();
             this.initJokke();
+            this.initDancers();
         }
 
         private void punchHandler()
@@ -982,6 +1036,18 @@ namespace PunchAnyoneRevived
             RaycastHit hit;
             if (Physics.Raycast(camera.transform.position, camera.transform.forward, out hit, 1.0f))
             {
+#if DEBUG
+                // DEBUG: print which object is hit.
+                GameObject go = hit.collider.gameObject;
+                ModConsole.Print(go.transform.childCount.ToString());
+                System.Text.StringBuilder pathMaker = new System.Text.StringBuilder(go.name);
+                while(go.transform.parent != null)
+                {
+                    go = go.transform.parent.gameObject;
+                    pathMaker.Insert(0, go.name + "/");
+                }
+                ModConsole.Print(pathMaker.ToString());
+#endif
                 foreach (PunchNPC npc in this.NPCs)
                 {
                     if (this.punchNPC(npc, hit))
