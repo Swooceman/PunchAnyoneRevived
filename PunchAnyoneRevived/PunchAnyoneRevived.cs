@@ -33,7 +33,9 @@ namespace PunchAnyoneRevived
         theatrePresident,
         Jokke,
         Uncle,
-        Dancer
+        Dancer,
+        Kuski,
+        KuskiPassenger
     }
 
     public class PunchAnyoneRevived : Mod
@@ -247,7 +249,7 @@ namespace PunchAnyoneRevived
                         GameObject drunk1Cap = npc.Skeleton.transform.Find("pelvis/spine_middle/spine_upper/HeadPivot/head/Cap 1").gameObject;
                         spawnNPCAttribute(drunk1Cap);
                     }
-                    else if (npc.NpcObjectType == NpcType.Lindell || npc.NpcObjectType == NpcType.Guard || npc.NpcObjectType == NpcType.Synthist || npc.NpcObjectType == NpcType.SuskiPassenger || npc.NpcObjectType == NpcType.TheatreGuy || npc.NpcObjectType == NpcType.Jokke || npc.NpcObjectType == NpcType.Dancer)
+                    else if (npc.NpcObjectType == NpcType.Lindell || npc.NpcObjectType == NpcType.Guard || npc.NpcObjectType == NpcType.Synthist || npc.NpcObjectType == NpcType.SuskiPassenger || npc.NpcObjectType == NpcType.TheatreGuy || npc.NpcObjectType == NpcType.Jokke || npc.NpcObjectType == NpcType.Dancer || npc.NpcObjectType == NpcType.Kuski)
                     {
                         // NPC without any attributes.
                         UnityEngine.Object.Destroy(newHead.transform.Find("Accessories/eye_glasses_regular").gameObject);
@@ -338,13 +340,19 @@ namespace PunchAnyoneRevived
                     }
                     else if (npc.NpcObjectType == NpcType.Uncle)
                     {
-                        GameObject uncleHat = npc.Skeleton.transform.Find("pelvis/spine_middle/spine_upper/HeadPivot/head").gameObject;
+                        GameObject uncleHat = npc.Skeleton.transform.Find("pelvis/spine_middle/spine_upper/HeadPivot/head/GifuHat").gameObject;
                         spawnNPCAttribute(uncleHat);
+                    }
+                    else if(npc.NpcObjectType == NpcType.KuskiPassenger)
+                    {
+                        UnityEngine.Object.Destroy(newHead.transform.Find("Accessories/eye_glasses_regular").gameObject);
+                        GameObject passengerHat = npc.Skeleton.transform.Find("spine_mid/shoulder/head/Cap 1").gameObject;
+                        spawnNPCAttribute(passengerHat);
                     }
 
 
-                    // Activate ragdoll.
-                    npcObjectBase.SetActive(false);
+                        // Activate ragdoll.
+                        npcObjectBase.SetActive(false);
                     UnityEngine.Object.Destroy(npcObjectBase);
                     teimoRagdoll.SetActive(true);
 
@@ -912,6 +920,37 @@ namespace PunchAnyoneRevived
             }
         }
 
+        private void initKuski()
+        {
+            GameObject kuskiBase = this.GetGameObject("NPC_CARS/KUSKI/LOD/Driver");
+            GameObject kuskiSkeleton = this.GetGameObject("NPC_CARS/KUSKI/LOD/Driver/skeleton");
+            GameObject kuskiBodymesh = this.GetGameObject("NPC_CARS/KUSKI/LOD/Driver/bodymesh");
+            GameObject kuskiHead = this.GetGameObject("NPC_CARS/KUSKI/LOD/Driver/skeleton/pelvis/spine_middle/spine_upper/HeadPivot/head");
+
+            GameObject kuskiNavAi = this.GetGameObject("NPC_CARS/KUSKI/Navigation");
+            GameObject kuskiColAi = this.GetGameObject("NPC_CARS/KUSKI/CarColliderAI");
+            void done()
+            {
+                kuskiNavAi.SetActive(false);
+                kuskiColAi.SetActive(false);
+            }
+            this.initNPC(kuskiHead, kuskiBodymesh, kuskiBase, kuskiSkeleton, done, NpcType.Kuski);
+        }
+
+        private void initKuskiPassenger()
+        {
+            GameObject kuskiBase = this.GetGameObject("NPC_CARS/KUSKI/Passenger");
+            GameObject kuskiSkeleton = this.GetGameObject("NPC_CARS/KUSKI/Passenger/pelvis");
+            GameObject kuskiBodymesh = this.GetGameObject("NPC_CARS/KUSKI/Passenger/bodymesh");
+            GameObject kuskiHead = this.GetGameObject("NPC_CARS/KUSKI/Passenger/pelvis/spine_mid/shoulder/head");
+
+            void done()
+            {
+
+            }
+            this.initNPC(kuskiHead, kuskiBodymesh, kuskiBase, kuskiSkeleton, done, NpcType.KuskiPassenger);
+        }
+
         private bool punchTeimo()
         {
             if (!this.teimoPunched)
@@ -1024,6 +1063,8 @@ namespace PunchAnyoneRevived
             this.initTheatrePresident();
             this.initJokke();
             this.initDancers();
+            this.initKuski();
+            this.initKuskiPassenger();
         }
 
         private void punchHandler()
