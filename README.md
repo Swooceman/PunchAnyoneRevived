@@ -1,6 +1,6 @@
 # PunchAnyoneRevived
 
-This mod aims to replicate PunchAnyone by haverdaden, though its source is written from scratch.
+This mod aims to replicate PunchAnyone by haverdaden, though its source is written from scratch. The code can use some optimization and refactoring, I'll see when I can get to it.
 This mod makes the following characters punchable:
 - Teimo
 - Fleetari
@@ -11,6 +11,7 @@ This mod makes the following characters punchable:
 - Lindell
 - Security guard
 - Band members
+- Dancers
 - Jani
 - Petteri
 - Suski
