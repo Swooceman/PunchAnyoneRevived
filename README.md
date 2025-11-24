@@ -26,3 +26,4 @@ This mod makes the following characters punchable:
 - Uncle
 - Theatre performers
 - Jokke
+- Kuski and passenger
