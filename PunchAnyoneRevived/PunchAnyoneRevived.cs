@@ -893,7 +893,6 @@ namespace PunchAnyoneRevived
                     foreach (Transform coupleDancer in coupleBase.transform)
                     {
                         GameObject dancerBase = coupleDancer.gameObject;
-                        ModConsole.Print(dancerBase.gameObject.name);
                         GameObject dancerSkeleton = dancerBase.transform.Find("Pivot").gameObject;
                         GameObject dancerBodymesh = dancerBase.transform.Find("Pivot/bodymesh").gameObject;
                         GameObject dancerHead;
